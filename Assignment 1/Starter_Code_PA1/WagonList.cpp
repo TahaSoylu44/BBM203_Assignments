@@ -8,8 +8,6 @@ void WagonList::clear()
 {
     // TODO: Delete all Wagon objects in this list and reset pointers.
 
-    Wagon firstWagon = *front;
-
 }
 
 WagonList::WagonList(WagonList &&other) noexcept
