@@ -23,6 +23,12 @@ void Train::addWagonToRear(Wagon *w)
 void Train::clear()
 { 
     //TODO: Do the cleaning as necesssary
+
+    wagons.clear();
+    name.clear();
+    totalWeight = 0;
+    nextLocomotive = nullptr;
+    destination = parseDestination("OTHERS");
 }
 
 // This function is given to you ready
@@ -50,6 +56,35 @@ Train *Train::verifyCouplersAndSplit(int splitCounter)
     // print message
     // std::cout << "Train " << name << " split due to coupler overload before Wagon " << splitId << std::endl;
     // std::cout << newTrain->wagons << std::endl;
+    
+    int weight = 0;
+    Wagon* tmp = wagons.getRear();
 
+    while (true)
+    {
+        while (tmp->getPrev())
+        {
+            weight += tmp->getWeight();
+
+            if ((tmp->getPrev())->getMaxCouplerLoad() < weight)
+            {
+                Train* newTrain = new Train();
+                newTrain->wagons = wagons.splitAtById(tmp->getID());
+
+                splitCounter++;
+                newTrain->name = name + "_split_" + std::to_string(splitCounter);
+                newTrain->totalWeight = weight;
+                newTrain->destination = destination;
+                newTrain->setNext(nextLocomotive);
+                nextLocomotive = newTrain;
+
+                std::cout << "Train " << name << " split due to coupler overload before Wagon " << tmp->getID() << std::endl;
+                std::cout << newTrain->wagons << std::endl;
+
+                weight = 0;
+            }
+            tmp = tmp->getPrev();
+        }
+    }
     return nullptr;
 }

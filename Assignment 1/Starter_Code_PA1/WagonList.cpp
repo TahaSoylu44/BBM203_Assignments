@@ -7,7 +7,11 @@ WagonList::~WagonList() { clear(); }
 void WagonList::clear()
 {
     // TODO: Delete all Wagon objects in this list and reset pointers.
-    if(front == nullptr) return;
+    if(front == nullptr)
+    {
+        totalWeight = 0;
+        return;
+    }
 
     Wagon* current = front;
 
@@ -125,7 +129,7 @@ void WagonList::insertSorted(Wagon *wagon)
     
     Wagon* tmp = front;
 
-    if ((wagon->getWeight()) > (tmp->getWeight()))
+    if ((wagon->getWeight()) >= (tmp->getWeight()))
     {
         wagon->setNext(tmp);
         tmp->setPrev(wagon);
@@ -138,7 +142,7 @@ void WagonList::insertSorted(Wagon *wagon)
 
     while (tmp->next)
     {
-        if ((wagon->getWeight()) > ((tmp->getNext())->getWeight()))
+        if ((wagon->getWeight()) >= ((tmp->getNext())->getWeight()))
         {
             wagon->setNext(tmp->next);
             (tmp->next)->setPrev(wagon);
@@ -147,7 +151,7 @@ void WagonList::insertSorted(Wagon *wagon)
 
             totalWeight += wagon->getWeight();
             
-            return
+            return;
         }
         tmp = tmp->next;
     }
@@ -155,6 +159,7 @@ void WagonList::insertSorted(Wagon *wagon)
 
     tmp->setNext(wagon);
     wagon->setPrev(tmp);
+    wagon->setNext(nullptr);
 
     rear = wagon;
     totalWeight += wagon->getWeight();
