@@ -24,6 +24,21 @@ TrainTrack::~TrainTrack()
     // TODO: If track is deconstucting, 
     // depart all of the trains
     // Handle pointers as necessary
+
+    Train* tmp = firstLocomotive;
+
+    while (tmp)
+    {
+        Train* beDeleted = tmp;
+        tmp = tmp->nextLocomotive;
+
+        delete beDeleted;
+    }
+    firstLocomotive = nullptr;
+    lastLocomotive = nullptr;
+    destination = parseDestination("OTHERS");
+    totalWeight = 0;
+    trainCounter = 0;
 }
 
 // Given to you ready
@@ -43,19 +58,54 @@ void TrainTrack::addTrain(Train *train)
     //   from the front until there is enough capacity.
     //      use: std::cout << "Auto-dispatch: departing " << departed->getName() << " to make room.\n";
 
+    if (firstLocomotive == nullptr)
+    {
+        firstLocomotive = train;
+        lastLocomotive = train;
+        destination = train->getDestination();
+        totalWeight = train->getTotalWeight();
+        trainCounter = 1;
+        return;
+    }
+    
+    (this->lastLocomotive)->setNext(train);
+    this->lastLocomotive = train;
+    trainCounter++;
+    totalWeight += train->getTotalWeight();
+
+    while (trainCounter > AUTO_DISPATCH_LIMIT && autoDispatch)
+    {
+        Train* beDeleted = departTrain();
+        std::cout << "Auto-dispatch: departing " << beDeleted->getName() << " to make room.\n";
+        delete beDeleted;
+    }
 }
 
 Train *TrainTrack::departTrain()
 {
     // TODO: Remove the first train (front of the track) and return it.
     // use: std::cout << "Train " << removed->name << " departed from Track " << destinationToString(destination) << "." << std::endl;
-    return nullptr;
+
+    if(firstLocomotive == nullptr) return nullptr;
+    
+    Train* beDeleted = firstLocomotive;
+    firstLocomotive = firstLocomotive->getNext();
+
+    totalWeight -= beDeleted->getTotalWeight();
+    trainCounter--;
+    std::cout << "Train " << beDeleted->name << " departed from Track " << destinationToString(destination) << "." << std::endl;
+
+    if (firstLocomotive == nullptr) //Maybe there is no train anymore.
+    {
+        lastLocomotive = nullptr;
+    }
+    return beDeleted;
 }
 
 bool TrainTrack::isEmpty() const
 {
     // TODO: Return true if there are no trains on this track.
-    return false;
+    return firstLocomotive == nullptr;
 }
 
 
@@ -63,6 +113,17 @@ Train *TrainTrack::findTrain(const std::string &name) const
 {
     // TODO: Search for a train by name.
     // Return pointer to train if found, nullptr otherwise.
+
+    Train* tmp = firstLocomotive;
+
+    while (tmp)
+    {
+        if (tmp->getName() == name)
+        {
+            return tmp;
+        }
+        tmp = tmp->getNext();
+    }
     return nullptr;
 }
 

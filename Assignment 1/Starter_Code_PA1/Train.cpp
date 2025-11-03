@@ -56,35 +56,52 @@ Train *Train::verifyCouplersAndSplit(int splitCounter)
     // print message
     // std::cout << "Train " << name << " split due to coupler overload before Wagon " << splitId << std::endl;
     // std::cout << newTrain->wagons << std::endl;
-    
+
     int weight = 0;
+    bool isSplit = false;
+    Train* newTrain = nullptr;
+    Train* lastTrain = this;
+
     Wagon* tmp = wagons.getRear();
 
-    while (true)
+    while (tmp->getPrev())
     {
-        while (tmp->getPrev())
+        weight += tmp->getWeight();
+
+        if ((tmp->getPrev())->getMaxCouplerLoad() < weight)
         {
-            weight += tmp->getWeight();
+            newTrain = new Train();
 
-            if ((tmp->getPrev())->getMaxCouplerLoad() < weight)
-            {
-                Train* newTrain = new Train();
-                newTrain->wagons = wagons.splitAtById(tmp->getID());
+            ++splitCounter;
+            newTrain->name = name + "_split_" + std::to_string(splitCounter);
+            newTrain->destination = destination;
+            newTrain->totalWeight = (newTrain->wagons).getTotalWeight();
+            newTrain->wagons = wagons.splitAtById(tmp->getID());
 
-                splitCounter++;
-                newTrain->name = name + "_split_" + std::to_string(splitCounter);
-                newTrain->totalWeight = weight;
-                newTrain->destination = destination;
-                newTrain->setNext(nextLocomotive);
-                nextLocomotive = newTrain;
+            newTrain->nextLocomotive = lastTrain->nextLocomotive;
+            lastTrain->nextLocomotive = newTrain;
+            lastTrain = newTrain;
 
-                std::cout << "Train " << name << " split due to coupler overload before Wagon " << tmp->getID() << std::endl;
-                std::cout << newTrain->wagons << std::endl;
+            weight = 0;
 
-                weight = 0;
-            }
-            tmp = tmp->getPrev();
+            std::cout << "Train " << name << " split due to coupler overload before Wagon " << tmp->getID() << std::endl;
+            std::cout << newTrain->wagons << std::endl;
+
+            isSplit = true;
+            tmp = wagons.getRear();
         }
+        else
+        {
+            tmp = tmp->getPrev();
+        }  
     }
-    return nullptr;
+
+    if (isSplit)
+    {
+        return newTrain;
+    }
+    else
+    {
+        return nullptr;
+    }
 }
