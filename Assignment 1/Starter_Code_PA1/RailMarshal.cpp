@@ -7,6 +7,14 @@ RailMarshal::RailMarshal()
 {
     // TODO: Initialize each track in the departure yard.
     // Each TrainTrack corresponds to one Destination.
+
+    Destination destination;
+
+    for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
+    {
+        destination = static_cast<Destination> (i);
+        departureYard[i] = TrainTrack(destination);
+    }
 }
 
 RailMarshal::~RailMarshal()
@@ -30,6 +38,81 @@ TrainTrack &RailMarshal::getDepartureYard(Destination dest)
 void RailMarshal::processCommand(const std::string &line)
 {
     // TODO: Parse user commands from input lines.
+
+    std::stringstream ss(line);
+    std::string smt;
+    ss >> smt;
+
+    if (smt == "ADD_WAGON")
+    {
+        try
+        {
+            int id;
+            std::string cargoType;
+            std::string destination;
+            int weight; 
+            int maxCouplerLoad; // Max weight a wagon can pull
+
+            if (!(ss >> id >> cargoType >> destination >> weight >> maxCouplerLoad))
+            {
+                throw std::runtime_error("Error: Invalid ADD_WAGON parameters.");
+            }
+            CargoType wagonCargo = parseCargo(cargoType);
+            Destination wagonDestination = parseDestination(destination);
+
+            Wagon* newWagon = new Wagon(id, wagonCargo, wagonDestination, weight, maxCouplerLoad);
+
+            classificationYard.insertWagon(newWagon);
+            std::cout << "Wagon " << *newWagon << " added to yard." << std::endl;
+        }
+        catch(const std::runtime_error& e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+    else if (smt == "REMOVE_WAGON")
+    {
+        try
+        {
+            int id;
+            if (!(ss >> id))
+            {
+                throw std::runtime_error("Error: Invalid REMOVE_WAGON parameters.");
+            }
+            
+            for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
+            {
+                for (int k = 0; k < NUM_CARGOTYPES_INT; k++)
+                {
+                    if ((classificationYard.getBlockTrain(i,k)).detachById(id))
+                    {
+                        std::cout << "Wagon " << id << " removed." << std::endl;
+                        return;
+                    }
+                }
+            } 
+            std::cout << "Error: Wagon " << id << " not found." << std::endl;
+            return;
+        }
+        catch(const std::runtime_error& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+    }
+    else if (smt == "ASSEMBLE_TRAIN")
+    {
+        std::string destination;
+        ss >> destination;
+
+        Destination trainDestination = parseDestination(destination);
+
+        Train* train = classificationYard.assembleTrain(trainDestination, departureYard->generateTrainName());
+    }
+    
+    
+    
+    
+    
 
     // if ADD_WAGON
     // Use: std::cout << "Error: Invalid ADD_WAGON parameters.\n";

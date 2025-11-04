@@ -57,7 +57,17 @@ bool ClassificationYard::isEmpty() const
      *
      * The yard is empty if every blockTrain list for all destination-cargo pairs is empty.
      */
-    
+
+    for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
+    {
+        for (int k = 0; k < NUM_CARGOTYPES_INT; k++)
+        {
+            if (!blockTrains[i][k].isEmpty())
+            {
+                return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -67,6 +77,14 @@ void ClassificationYard::clear()
      *
      * Used when resetting or ending the simulation.
      */
+
+    for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
+    {
+        for (int k = 0; k < NUM_CARGOTYPES_INT; k++)
+        {
+            blockTrains[i][k].clear();
+        }
+    } 
 }
 
 // Print function is already implemented to keep output uniform
