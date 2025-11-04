@@ -50,6 +50,7 @@ public:
     void print() const;
     bool isEmpty() const;
     Wagon *findById(int id);
+    int maxWeight() const;
 
     // Declare friend function for operator<<
     friend std::ostream &operator<<(std::ostream &os, const WagonList &list);

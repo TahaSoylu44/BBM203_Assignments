@@ -10,7 +10,6 @@ class ClassificationYard
 private:
     //! 2D matrix of WagonLists: [Destination][CargoType]
     WagonList blockTrains[NUM_DESTINATIONS_INT][NUM_CARGOTYPES_INT];
-
 public:
     // Constructor and destructor
     ClassificationYard();

@@ -35,8 +35,20 @@ Train *ClassificationYard::assembleTrain(Destination dest, const std::string &tr
      *   based on their heaviest wagon.
      * - Hazardous cargo (e.g., OIL) must always be placed at the very end of the train,
      *   and only one hazardous block can be included per train.*/
+    Train* newTrain = new Train(trainName, dest);
 
-    return nullptr;
+    int destination = static_cast<int>(dest);
+
+    for (int i = 0; i < NUM_CARGOTYPES_INT; i++)
+    {
+        WagonList& block = getBlockTrain(destination, i);
+
+        if (!block.isEmpty())
+        {
+            newTrain->appendWagonList(block);
+        }
+    }
+    return newTrain;
 }
 
 bool ClassificationYard::isEmpty() const
@@ -45,6 +57,7 @@ bool ClassificationYard::isEmpty() const
      *
      * The yard is empty if every blockTrain list for all destination-cargo pairs is empty.
      */
+    
     return true;
 }
 

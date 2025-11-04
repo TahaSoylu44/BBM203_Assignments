@@ -181,23 +181,39 @@ void WagonList::appendList(WagonList &&other)
     return;
    }
 
-   if ((other.getFront()->getCargoType()) == parseCargo("HAZARDOUS") ||
-       (other.front)->getWeight() > (this->front)->getWeight())
+   bool isOtherHazardous = (other.getFront())->getCargoType() == parseCargo("HAZARDOUS");
+   bool isThisHazardous = (this->getFront())->getCargoType() == parseCargo("HAZARDOUS");
+
+   bool isOtherGreater = other.maxWeight() > this->maxWeight();
+
+   if (isOtherHazardous)
    {
-    (other.rear)->setNext(this->front);
+    (this->rear)->setNext(other.front); //"This" is first
+    (other.front)->setPrev(this->rear);
+    (this->rear) = other.rear;
+   }
+   else if (isThisHazardous)
+   {
+    (other.rear)->setNext(this->front); //Other is first
+    (this->front)->setPrev(other.rear);
+    (this->front) = other.front;
+   }
+   else if (isOtherGreater)
+   {
+    (other.rear)->setNext(this->front); //Other is first
     (this->front)->setPrev(other.rear);
     (this->front) = other.front;
    }
    else
    {
-    (this->rear)->setNext(other.front);
+    (this->rear)->setNext(other.front); //"This" is first
     (other.front)->setPrev(this->rear);
     (this->rear) = other.rear;
    }
    this->totalWeight += other.getTotalWeight();
-    other.front = nullptr;
-    other.rear = nullptr;
-    other.totalWeight = 0;
+   other.front = nullptr;
+   other.rear = nullptr;
+   other.totalWeight = 0;
 }
 
 Wagon *WagonList::detachById(int id)
@@ -339,4 +355,22 @@ std::ostream &operator<<(std::ostream &os, const WagonList &list)
         current = current->getNext();
     }
     return os;
+}
+
+/**
+ * @brief Find the heaviest wagon
+ * 
+ * @return int 
+ */
+int WagonList::maxWeight() const
+{
+    int max = 0;
+    Wagon* tmp = front;
+    while (tmp)
+    {
+        if (tmp->getWeight() > max)
+            max = tmp->getWeight();
+        tmp = tmp->getNext();
+    }
+    return max;
 }
