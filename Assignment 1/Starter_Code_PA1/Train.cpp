@@ -60,7 +60,6 @@ Train *Train::verifyCouplersAndSplit(int splitCounter)
     int weight = 0;
     bool isSplit = false;
     Train* newTrain = nullptr;
-    Train* lastTrain = this;
 
     Wagon* tmp = wagons.getRear();
 
@@ -72,15 +71,13 @@ Train *Train::verifyCouplersAndSplit(int splitCounter)
         {
             newTrain = new Train();
 
-            ++splitCounter;
+            newTrain->wagons = wagons.splitAtById(tmp->getID());
             newTrain->name = name + "_split_" + std::to_string(splitCounter);
             newTrain->destination = destination;
             newTrain->totalWeight = (newTrain->wagons).getTotalWeight();
-            newTrain->wagons = wagons.splitAtById(tmp->getID());
-
-            newTrain->nextLocomotive = lastTrain->nextLocomotive;
-            lastTrain->nextLocomotive = newTrain;
-            lastTrain = newTrain;
+            
+            newTrain->nextLocomotive = nextLocomotive;
+            nextLocomotive = newTrain;
 
             weight = 0;
 
@@ -89,6 +86,7 @@ Train *Train::verifyCouplersAndSplit(int splitCounter)
 
             isSplit = true;
             tmp = wagons.getRear();
+            break;
         }
         else
         {

@@ -106,25 +106,132 @@ void RailMarshal::processCommand(const std::string &line)
 
         Destination trainDestination = parseDestination(destination);
 
-        Train* train = classificationYard.assembleTrain(trainDestination, departureYard->generateTrainName());
+        if (destinationToString(trainDestination) == "OTHERS")
+        {
+            std::cout << "Error: Invalid ASSEMBLE_TRAIN parameters.\n";
+        }
+        else
+        {
+            Train* train = classificationYard.assembleTrain(trainDestination, departureYard->generateTrainName());
+
+            if (train)
+            {
+                Train* splitTrain = train;
+                int splitCounter = 1;
+                while (splitTrain)
+                {
+                    splitTrain = train->verifyCouplersAndSplit(splitCounter);
+                    if (splitTrain)
+                    {
+                        std::cout << "Train " << splitTrain->getName() << " assembled after split with " 
+                        << splitTrain->getWagons()<< " wagons." << std::endl;
+                        splitCounter++;
+                    }
+                }
+                std::cout << "Train " << train->getName() << " assembled with " << train->getWagons() << " wagons." << std::endl;
+            }
+            else
+            {
+                std::cout << "No wagons to assemble for " << destination << std::endl;
+            }
+        }
+    }
+    else if (smt == "DISPATCH_TRAIN")   //!
+    {
+        std::string destination;
+        ss >> destination;
+        TrainTrack trainTrack;
+
+        Destination trainDestination = parseDestination(destination);
+
+        if (destinationToString(trainDestination) == "OTHERS")
+        {
+            std::cout << "Error: Invalid DISPATCH parameters.\n";
+        }
+        else
+        {
+            for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
+            {
+                trainTrack = departureYard[i];
+                if (trainTrack.getFirst()->getDestination() == trainDestination)
+                {
+                    trainTrack.departTrain();
+                    std::cout << "Dispatching " << trainTrack.getFirst()->getName() << " (" << trainTrack.getFirst()->getTotalWeight() << " tons)." << std::endl;
+                    break;
+                }
+            }
+            std::cout << "Error: No trains to dispatch from track " << destination << ".\n";
+        }
+    }
+    else if (smt == "PRINT_YARD")
+    {
+        std::cout << "--- classification Yard ---\n";
+        classificationYard.print();
+        printDepartureYard();
+
+    }
+    else if (smt == "PRINT_TRACK")
+    {
+        std::string destination;
+        ss >> destination;
+        TrainTrack trainTrack;
+
+        Destination trainDestination = parseDestination(destination);
+
+        if (destinationToString(trainDestination) == "OTHERS")
+        {
+            std::cout << "Error: Invalid PRINT_TRACK parameters.\n";
+        }
+        else
+        {
+            for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
+            {
+                trainTrack = departureYard[i];
+
+                if (trainTrack.getFirst()->getDestination() == trainDestination)
+                {
+                    trainTrack.printTrack();
+                    break;
+                }
+            }  
+        }
+    }
+    else if (smt == "AUTO_DISPATCH ON")
+    {
+        std::string myswitch;
+        ss >> myswitch;
+        //
+    }
+    else if (smt == "AUTO_DISPATCH ON")
+    {
+        //
+    }
+    else if (smt == "CLEAR")
+    {
+        classificationYard.clear();
+
+        for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
+        {
+            departureYard[i] = TrainTrack();
+        }
+        std::cout << "System cleared." << std::endl;
+    }
+    else
+    {
+        std::cout << "Error: Unknown command '" << smt << "'" << std::endl;
     }
     
-    
-    
-    
-    
-
     // if ADD_WAGON
-    // Use: std::cout << "Error: Invalid ADD_WAGON parameters.\n";
+    //! Use: std::cout << "Error: Invalid ADD_WAGON parameters.\n";
     // Use: std::cout << "Wagon " << *w << " added to yard." << std::endl;
 
     // if REMOVE_WAGON
-    // Use: std::cout << "Error: Invalid REMOVE_WAGON parameters.\n";
+    //! Use: std::cout << "Error: Invalid REMOVE_WAGON parameters.\n";
     // Use: std::cout << "Wagon " << id << " removed." << std::endl;
     // Use: std::cout << "Error: Wagon " << id << " not found." << std::endl;
 
     // if ASSEMBLE_TRAIN
-    //  Use: std::cout << "Error: Invalid ASSEMBLE_TRAIN parameters.\n";
+    //!  Use: std::cout << "Error: Invalid ASSEMBLE_TRAIN parameters.\n";
     //  Use: std::cout << "No wagons to assemble for " << destStr << std::endl;
     //  verify couplers and possibly split (deterministic)
     //  Keep splitting the *front* train until no more overloaded couplers found
@@ -134,7 +241,7 @@ void RailMarshal::processCommand(const std::string &line)
     // use std::cout << "Train " << t->getName() << " assembled with " << t->getWagons() << " wagons." << std::endl;
 
     // if DISPATCH_TRAIN
-    //  use: std::cout << "Error: Invalid DISPATCH parameters.\n";
+    //!  use: std::cout << "Error: Invalid DISPATCH parameters.\n";
     //  use: std::cout << "Error: No trains to dispatch from track " << destStr << ".\n";
     //  use:  std::cout << "Dispatching " << train->getName() << " (" << t->getTotalWeight() << " tons)." << std::endl;
 
@@ -142,7 +249,7 @@ void RailMarshal::processCommand(const std::string &line)
     //  use std::cout << "--- classification Yard ---\n";
 
     // if PRINT_TRACK
-    //  use std::cout << "Error: Invalid PRINT_TRACK parameters.\n";
+    //!  use std::cout << "Error: Invalid PRINT_TRACK parameters.\n";
 
     // if AUTO_DISPATCH <ON/OFF>
     // Enable or disable automatic dispatch when weight exceeds limits.
@@ -183,7 +290,7 @@ void RailMarshal::printStatus() const
     classificationYard.print();
 
     std::cout << "--- Departure Yard ---\n";
-    for (int i = 0; i < static_cast<int>(Destination::NUM_DESTINATIONS); ++i)
+    for (int i = 0; i < static_cast<int>(Destination::NUM_DESTINATIONS); i++) //was ++i
     {
         departureYard[i].printTrack();
     }

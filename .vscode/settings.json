@@ -46,5 +46,6 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/home/tahas/BBM203_Asg/Assignment 1/Starter_Code_PA1"
 }
