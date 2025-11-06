@@ -45,30 +45,24 @@ void RailMarshal::processCommand(const std::string &line)
 
     if (smt == "ADD_WAGON")
     {
-        try
+        int id;
+        std::string cargoType;
+        std::string destination;
+        int weight; 
+        int maxCouplerLoad; // Max weight a wagon can pull
+
+        if (!(ss >> id >> cargoType >> destination >> weight >> maxCouplerLoad))
         {
-            int id;
-            std::string cargoType;
-            std::string destination;
-            int weight; 
-            int maxCouplerLoad; // Max weight a wagon can pull
-
-            if (!(ss >> id >> cargoType >> destination >> weight >> maxCouplerLoad))
-            {
-                throw std::runtime_error("Error: Invalid ADD_WAGON parameters.");
-            }
-            CargoType wagonCargo = parseCargo(cargoType);
-            Destination wagonDestination = parseDestination(destination);
-
-            Wagon* newWagon = new Wagon(id, wagonCargo, wagonDestination, weight, maxCouplerLoad);
-
-            classificationYard.insertWagon(newWagon);
-            std::cout << "Wagon " << *newWagon << " added to yard." << std::endl;
+            std::cout << "Error: Invalid ADD_WAGON parameters.\n";
+            return;
         }
-        catch(const std::runtime_error& e)
-        {
-            std::cerr << e.what() << std::endl;
-        }
+        CargoType wagonCargo = parseCargo(cargoType);
+        Destination wagonDestination = parseDestination(destination);
+
+        Wagon* newWagon = new Wagon(id, wagonCargo, wagonDestination, weight, maxCouplerLoad);
+
+        classificationYard.insertWagon(newWagon);
+        std::cout << "Wagon " << *newWagon << " added to yard." << std::endl;
     }
     else if (smt == "REMOVE_WAGON")
     {
