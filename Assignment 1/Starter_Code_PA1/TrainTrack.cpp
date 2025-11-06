@@ -61,17 +61,19 @@ void TrainTrack::addTrain(Train *train)
     if (firstLocomotive == nullptr)
     {
         firstLocomotive = train;
-        lastLocomotive = train;
+        lastLocomotive = train; //!
+        lastLocomotive->nextLocomotive = nullptr;    //?
         destination = train->getDestination();
         totalWeight = train->getTotalWeight();
-        trainCounter = 1;
         return;
     }
-    
-    (this->lastLocomotive)->setNext(train);
-    this->lastLocomotive = train;
-    trainCounter++;
-    totalWeight += train->getTotalWeight();
+    if (lastLocomotive)
+    {
+        (this->lastLocomotive)->setNext(train);
+        this->lastLocomotive = train;
+        lastLocomotive->nextLocomotive = nullptr;    //?
+        totalWeight += train->getTotalWeight();
+    }
 
     while (trainCounter > AUTO_DISPATCH_LIMIT && autoDispatch)
     {

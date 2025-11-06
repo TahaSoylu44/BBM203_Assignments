@@ -36,6 +36,8 @@ Train *ClassificationYard::assembleTrain(Destination dest, const std::string &tr
      * - Hazardous cargo (e.g., OIL) must always be placed at the very end of the train,
      *   and only one hazardous block can be included per train.*/
     bool isTrainExists = false;
+    CargoType cargoType;
+    Wagon* hazardousWagon;
 
     Train* newTrain = new Train(trainName, dest);
 
@@ -47,7 +49,18 @@ Train *ClassificationYard::assembleTrain(Destination dest, const std::string &tr
 
         if (!block.isEmpty())
         {
-            newTrain->appendWagonList(block);
+            cargoType = block.getFront()->getCargoType();
+            if (cargoTypeToString(cargoType) == "HAZARDOUS")
+            {
+                hazardousWagon = block.detachById(block.getFront()->getID());
+                newTrain->addWagonToRear(hazardousWagon);
+                //If I come across a hazardous block,I detach the front.
+                //I add the detached one to the rear.     
+            }
+            else
+            {
+                newTrain->appendWagonList(block);
+            }
             isTrainExists = true;
         }
     }

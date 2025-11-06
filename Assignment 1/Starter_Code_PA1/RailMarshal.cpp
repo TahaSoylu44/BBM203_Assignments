@@ -105,6 +105,7 @@ void RailMarshal::processCommand(const std::string &line)
         ss >> destination;
 
         Destination trainDestination = parseDestination(destination);
+        int destIdx = static_cast<int>(trainDestination);
 
         if (destinationToString(trainDestination) == "OTHERS")
         {
@@ -112,23 +113,28 @@ void RailMarshal::processCommand(const std::string &line)
         }
         else
         {
-            Train* train = classificationYard.assembleTrain(trainDestination, departureYard->generateTrainName());
+            Train* train = classificationYard.assembleTrain(trainDestination, departureYard[destIdx].generateTrainName());
 
             if (train)
             {
                 Train* splitTrain = train;
-                int splitCounter = 1;
+                int splitCounter = 0;
                 while (splitTrain)
                 {
+                    ++splitCounter;
                     splitTrain = train->verifyCouplersAndSplit(splitCounter);
                     if (splitTrain)
                     {
                         std::cout << "Train " << splitTrain->getName() << " assembled after split with " 
                         << splitTrain->getWagons()<< " wagons." << std::endl;
-                        splitCounter++;
                     }
                 }
                 std::cout << "Train " << train->getName() << " assembled with " << train->getWagons() << " wagons." << std::endl;
+                
+                // std::cout << "[main] departureYard[" << destIdx 
+                // << "] address = " << &departureYard[destIdx] << std::endl;
+
+                departureYard[destIdx].addTrain(train);
             }
             else
             {
@@ -136,7 +142,7 @@ void RailMarshal::processCommand(const std::string &line)
             }
         }
     }
-    else if (smt == "DISPATCH_TRAIN")   //!
+    else if (smt == "DISPATCH_TRAIN")
     {
         std::string destination;
         ss >> destination;
@@ -150,25 +156,13 @@ void RailMarshal::processCommand(const std::string &line)
         }
         else
         {
-            for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
-            {
-                trainTrack = departureYard[i];
-                if (trainTrack.getFirst()->getDestination() == trainDestination)
-                {
-                    trainTrack.departTrain();
-                    std::cout << "Dispatching " << trainTrack.getFirst()->getName() << " (" << trainTrack.getFirst()->getTotalWeight() << " tons)." << std::endl;
-                    break;
-                }
-            }
-            std::cout << "Error: No trains to dispatch from track " << destination << ".\n";
+            dispatchFromTrack(trainDestination);
         }
     }
     else if (smt == "PRINT_YARD")
     {
         std::cout << "--- classification Yard ---\n";
         classificationYard.print();
-        printDepartureYard();
-
     }
     else if (smt == "PRINT_TRACK")
     {
@@ -188,23 +182,44 @@ void RailMarshal::processCommand(const std::string &line)
             {
                 trainTrack = departureYard[i];
 
-                if (trainTrack.getFirst()->getDestination() == trainDestination)
+                if (!trainTrack.isEmpty())
                 {
-                    trainTrack.printTrack();
-                    break;
+                    if (trainTrack.getFirst()->getDestination() == trainDestination)
+                    {
+                        trainTrack.printTrack();
+                        break;
+                    }
                 }
             }  
         }
     }
-    else if (smt == "AUTO_DISPATCH ON")
+    else if (smt == "AUTO_DISPATCH")
     {
         std::string myswitch;
         ss >> myswitch;
-        //
-    }
-    else if (smt == "AUTO_DISPATCH ON")
-    {
-        //
+
+        if (myswitch == "ON")
+        {
+            //! ON
+            for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
+            {
+                departureYard[i].autoDispatch = true; 
+            }
+            std::cout << "Auto dispatch enabled" << std::endl;
+        }
+        else if (myswitch == "OFF")
+        {
+            //! OFF
+            for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
+            {
+                departureYard[i].autoDispatch = false;
+            }
+            std::cout << "Auto dispatch disabled" << std::endl; 
+        }
+        else
+        {
+            std::cout << "Unknown AUTO_DISPATCH command" << std::endl;
+        }
     }
     else if (smt == "CLEAR")
     {
@@ -271,6 +286,31 @@ void RailMarshal::dispatchFromTrack(Destination track)
               << " departed from Track " << destIndex
               << " (" << destinationToString(static_cast<Destination>(destIndex)) << ").\n";
      */
+    TrainTrack trainTrack;
+    int destIndex = static_cast<int>(track);
+    Train* beDeparted = nullptr;
+
+    for (int i = 0; i < NUM_DESTINATIONS_INT; i++)
+    {
+        trainTrack = departureYard[i];
+
+        if (!trainTrack.isEmpty())
+        {
+            if (trainTrack.getFirst()->getDestination() == track)
+            {
+                beDeparted = trainTrack.departTrain();
+
+                std::cout << "Train " <<beDeparted->getName()
+                << " departed from Track " << destIndex
+                << " (" << destinationToString(static_cast<Destination>(destIndex)) << ").\n";
+
+                std::cout << "Dispatching " << beDeparted->getName() << " (" << beDeparted->getTotalWeight() << " tons)." << std::endl;
+
+                return;
+            }
+        }
+    }
+    std::cout << "Error: No trains to dispatch from Track " << destIndex << ".\n";
 }
 
 void RailMarshal::printDepartureYard() const

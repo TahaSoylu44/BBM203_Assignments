@@ -181,24 +181,24 @@ void WagonList::appendList(WagonList &&other)
     return;
    }
 
-   bool isOtherHazardous = (other.getFront())->getCargoType() == parseCargo("HAZARDOUS");
-   bool isThisHazardous = (this->getFront())->getCargoType() == parseCargo("HAZARDOUS");
+//    bool isOtherHazardous = (other.getFront())->getCargoType() == parseCargo("HAZARDOUS");
+//    bool isThisHazardous = (this->getFront())->getCargoType() == parseCargo("HAZARDOUS");
 
    bool isOtherGreater = other.maxWeight() > this->maxWeight();
 
-   if (isOtherHazardous)
-   {
-    (this->rear)->setNext(other.front); //"This" is first
-    (other.front)->setPrev(this->rear);
-    (this->rear) = other.rear;
-   }
-   else if (isThisHazardous)
-   {
-    (other.rear)->setNext(this->front); //Other is first
-    (this->front)->setPrev(other.rear);
-    (this->front) = other.front;
-   }
-   else if (isOtherGreater)
+//    if (isOtherHazardous)
+//    {
+//     (this->rear)->setNext(other.front); //"This" is first
+//     (other.front)->setPrev(this->rear);
+//     (this->rear) = other.rear;
+//    }
+//    else if (isThisHazardous)
+//    {
+//     (other.rear)->setNext(this->front); //Other is first
+//     (this->front)->setPrev(other.rear);
+//     (this->front) = other.front;
+//    }
+   if (isOtherGreater)
    {
     (other.rear)->setNext(this->front); //Other is first
     (this->front)->setPrev(other.rear);

@@ -59,7 +59,7 @@ Train *Train::verifyCouplersAndSplit(int splitCounter)
 
     int weight = 0;
     bool isSplit = false;
-    Train* newTrain = nullptr;
+    Train* newTrain;
 
     Wagon* tmp = wagons.getRear();
 
@@ -76,8 +76,8 @@ Train *Train::verifyCouplersAndSplit(int splitCounter)
             newTrain->destination = destination;
             newTrain->totalWeight = (newTrain->wagons).getTotalWeight();
             
-            newTrain->nextLocomotive = nextLocomotive;
-            nextLocomotive = newTrain;
+            newTrain->nextLocomotive = this->nextLocomotive;
+            this->nextLocomotive = newTrain;
 
             weight = 0;
 
