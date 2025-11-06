@@ -77,7 +77,6 @@ void TrainTrack::addTrain(Train *train)
 
     while ((totalWeight > AUTO_DISPATCH_LIMIT) && autoDispatch)
     {
-        std::cout << "Buraya gelmelisin!" << std::endl;
         Train* beDeleted = departTrain();
         std::cout << "Auto-dispatch: departing " << beDeleted->getName() << " to make room.\n";
         delete beDeleted;
