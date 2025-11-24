@@ -104,5 +104,17 @@ int Request::computeWorkloadContribution() const {
     // TODO: Compute workload score as explained in the PDF.
     // SUPPLY: workload += amount
     // RESCUE: workload += numPeople * riskMultiplier
-    return 0;
+
+    if (type == "SUPPLY")
+    {
+        return amount;
+    }
+    else if (type == "RESCUE")
+    {
+        return numPeople * getRiskMultiplier();
+    }
+    else
+    {
+        return -1;  //ERROR
+    }
 }

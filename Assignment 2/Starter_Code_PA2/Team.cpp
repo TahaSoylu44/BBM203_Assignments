@@ -40,14 +40,49 @@ bool Team::hasActiveMission() const {
 
 bool Team::tryAssignRequest(const Request& req) {
     //TODO: Implement tryAssignRequest function as explained in the PDF.
-    (void)req;
-    return false;
+
+    if (missionStack.push(req))
+    {
+        currentWorkload += req.computeWorkloadContribution();
+
+        if (currentWorkload > maxLoadCapacity)
+        {
+            return false;
+        } 
+        else
+        {
+            return true;
+        }
+    }
+    else
+    {
+        return false;
+    }
+    // (void)req;
+    // return false;
 }
 
 void Team::rollbackMission(RequestQueue& supplyQueue, RequestQueue& rescueQueue) {
     //TODO: Implement rollbackMission function as explained in the PDF.
-    (void)supplyQueue;
-    (void)rescueQueue;
+
+    while(!missionStack.isEmpty())
+    {
+        Request popedRequest;
+
+        missionStack.pop(popedRequest);
+
+        if (popedRequest.getType() == "SUPPLY")
+        {
+           supplyQueue.enqueue(popedRequest);
+        }
+        else if (popedRequest.getType() == "RESCUE")
+        {
+            rescueQueue.enqueue(popedRequest);
+        }
+    }
+
+    // (void)supplyQueue;
+    // (void)rescueQueue;
 }
 
 void Team::clearMission() {

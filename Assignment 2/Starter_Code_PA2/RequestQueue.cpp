@@ -150,7 +150,9 @@ bool RequestQueue::resize(int newCapacity) {
 
     if (newCapacity < size()) return false; //bi zahmet yeni kapasite fazla olsun
 
-    Request* tmp = new Request[newCapacity];
+    Request* tmp = new (std::nothrow) Request[newCapacity];
+
+    if(tmp == nullptr) return false;
 
     for (int i = 0; i < size(); i++)
     {
