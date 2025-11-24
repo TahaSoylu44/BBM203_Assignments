@@ -39,13 +39,13 @@ bool Team::hasActiveMission() const {
 }
 
 bool Team::tryAssignRequest(const Request& req) {
-    //Implement tryAssignRequest function as explained in the PDF.
+    //TODO: Implement tryAssignRequest function as explained in the PDF.
     (void)req;
     return false;
 }
 
 void Team::rollbackMission(RequestQueue& supplyQueue, RequestQueue& rescueQueue) {
-    //Implement rollbackMission function as explained in the PDF.
+    //TODO: Implement rollbackMission function as explained in the PDF.
     (void)supplyQueue;
     (void)rescueQueue;
 }

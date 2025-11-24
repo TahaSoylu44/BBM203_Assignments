@@ -16,7 +16,7 @@ public:
 
     // Initialize teams with fixed count.
     // Capacities will be provided from input file using SET_TEAM_CAPACITY.
-    void initializeTeams(int numTeams);
+    bool initializeTeams(int numTeams);
 
     // Parse a single line from the input and execute the command.
     // Returns false when the command is CLEAR and system should stop,

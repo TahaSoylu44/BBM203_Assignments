@@ -12,6 +12,7 @@ public:
             const std::string& supplyType,
             int amount,
             int emergencyLevel);
+            
     // Constructor for RESCUE requests
     Request(const std::string& id,
             const std::string& city,

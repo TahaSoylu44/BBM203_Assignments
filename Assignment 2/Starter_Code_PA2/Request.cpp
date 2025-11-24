@@ -83,6 +83,20 @@ int Request::computeEmergencyScore() const {
     // TODO: Compute emergency score as explained in the PDF.
     // SUPPLY: emergencyLevel * 10 + min(amount, 50)
     // RESCUE: emergencyLevel * 10 + numPeople * riskMultiplier
+
+    if (type == "SUPPLY")
+    {
+        return 10 * emergencyLevel + ((amount > 50) ? 50 : amount);
+    }
+    else if(type == "RESCUE")
+    {
+        return (10 * emergencyLevel) + (numPeople * getRiskMultiplier());
+    }
+    else
+    {
+        return -1;
+    }
+
     return 0;
 }
 
