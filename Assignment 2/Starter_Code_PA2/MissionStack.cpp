@@ -32,18 +32,45 @@ int MissionStack::size() const {
 
 bool MissionStack::push(const Request& req) {
     //TODO: Implement push function as explained in the PDF.
-    (void)req;
-    return false;
+    if (data == nullptr) return false;
+
+    if (size() == capacity)
+    {
+        if (!resize(2 * capacity))
+        {
+            return false;   //hani oldu da resize yapamadım,ne olur ne olmaz
+        }
+    }
+    
+    data[++top] = req;
+    return true;
+    
+    // (void)req;
+    // return false;
 }
 
 bool MissionStack::pop(Request& outReq) {
     //TODO: Implement pop function as explained in the PDF.
-    (void)outReq;
-    return false;
+    if (data == nullptr) return false;
+
+    if(isEmpty()) return false;
+
+    outReq = data[top--];
+    return true;
+
+    // (void)outReq;
+    // return false;
 }
 
 bool MissionStack::peek(Request& outReq) const {
     //TODO: Implement peek function as explained in the PDF.
+
+    if (data == nullptr) return false;
+
+    if(isEmpty()) return false;
+
+    outReq = data[top];
+
     return true;
 }
 
@@ -53,5 +80,20 @@ void MissionStack::clear() {
 
 bool MissionStack::resize(int newCapacity) {
     //TODO: Implement resize function as explained in the PDF.
+
+    if (newCapacity < size()) return false;
+
+    Request* tmp = new Request[newCapacity];
+
+    for (int i = 0; i <= top; i++)
+    {
+        tmp[i] = data[i];
+    }
+
+    delete[] data;
+
+    data = tmp;
+    capacity = newCapacity;
+    
     return true;
 }

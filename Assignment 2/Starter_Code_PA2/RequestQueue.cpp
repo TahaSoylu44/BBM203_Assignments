@@ -46,11 +46,19 @@ int RequestQueue::nextIndex(int idx) const {
 
 bool RequestQueue::enqueue(const Request& req) {
     //TODO: Implement enqueue function as explained in the PDF.
-    if(isFull()) return false;
+    if (data == nullptr) return false;
 
-    if(rear != 0) rear = nextIndex(rear);
-        
-    data[rear] = req;
+    if(isFull()) resize(2 * capacity);
+
+    if (isEmpty())
+    {
+        data[rear] = req;
+    }
+    else
+    {
+        rear = nextIndex(rear);
+        data[rear] = req;
+    }
     count++;
     return true;
 
@@ -60,6 +68,7 @@ bool RequestQueue::enqueue(const Request& req) {
 
 bool RequestQueue::dequeue(Request& outReq) {
     //TODO: Implement dequeue function as explained in the PDF.
+    if (data == nullptr) return false;
 
     if(isEmpty()) return false;
 
@@ -71,8 +80,8 @@ bool RequestQueue::dequeue(Request& outReq) {
         return true;
     }
 
-
     front = nextIndex(front);
+    count--;
     return true;
 
     // (void)outReq; // suppress unused warning until implemented
@@ -81,6 +90,7 @@ bool RequestQueue::dequeue(Request& outReq) {
 
 bool RequestQueue::peek(Request& outReq) const {
     //TODO: Implement peek function as explained in the PDF.
+    if (data == nullptr) return false;
 
     if(isEmpty()) return false;
 
@@ -97,6 +107,7 @@ void RequestQueue::clear() {
 
 bool RequestQueue::removeById(const std::string& id) {
     //TODO: Implement removeById function as explained in the PDF.
+    if (data == nullptr) return false;
 
     if(isEmpty()) return false;
 
@@ -105,26 +116,26 @@ bool RequestQueue::removeById(const std::string& id) {
 
     while (true)
     {
-        if (data[index].getId() == id)
+        if (data[index].getId() == id)  //Gerçekten böyle bir id var mı?
         {
             isFound = true;
             while (true)
             {
-                if (index == rear) break;
-                data[index] = data[nextIndex(index)];
+                if (index == rear) break;   //rear a dokunma
+                data[index] = data[nextIndex(index)];   //sola kaydır
                 index = nextIndex(index);
             } 
-            if (count == 1)
+            if (count == 1) //tek bir eleman var ve o da bizim aradığımız   
             {
                 clear();
                 return true;
             }
             if (rear == 0) rear = capacity - 1;
-            else rear--;
-            count--;
+            else rear--;    //rear bir öne gelsin
+            count--;    //eleman sayısı azaldı
             break;
         }
-        if (index == rear) return false;
+        if (index == rear) return false;    //rear a kadar aradım ama bulamadım,demek ki yok
         index = nextIndex(index);
     }
     if(isFound) return true;
@@ -136,5 +147,22 @@ bool RequestQueue::removeById(const std::string& id) {
 
 bool RequestQueue::resize(int newCapacity) {
     //TODO: Implement resize function as explained in the PDF.
+
+    if (newCapacity < size()) return false; //bi zahmet yeni kapasite fazla olsun
+
+    Request* tmp = new Request[newCapacity];
+
+    for (int i = 0; i < size(); i++)
+    {
+        tmp[i] = data[(front + i) % capacity];
+    }
+
+    delete[] data;
+    data = tmp;
+
+    front = 0;
+    rear = size() - 1;
+    capacity = newCapacity;
+    
     return true;
 }
