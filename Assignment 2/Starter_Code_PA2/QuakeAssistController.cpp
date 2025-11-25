@@ -208,7 +208,7 @@ bool QuakeAssistController::handleSetTeamCapacity(int teamId, int capacity) {
     if (index != -1)
     {
         teams[index].setMaxLoadCapacity(capacity);
-        std::cout << "Team " << teamId << " capacity set to " << capacity << std::endl;
+        std::cout << "Team " << teamId << " capacity set to " << capacity << "." << std::endl;
 
         return true;
     }
@@ -333,7 +333,7 @@ bool QuakeAssistController::handleHandleEmergency(int teamId, int k) {
     }
     std::cout << "Team " << teamId << " assigned " << (supplyCounter + rescueCounter) 
     << " requests (" << supplyCounter << " SUPPLY, " << rescueCounter 
-    << " RESCUE), total workload " << teams[teamIdx].getCurrentWorkload() << std::endl;
+    << " RESCUE), total workload " << teams[teamIdx].getCurrentWorkload() << "." << std::endl;
 
     return true;
 }
@@ -408,7 +408,7 @@ void QuakeAssistController::printTeam(int teamId) const {
 
     std::cout << "TEAM "<< teamId << " STACK:" << std::endl;
 
-    for (int i = 0; i <= ms.getTopIndex(); i++)
+    for (int i = ms.getTopIndex(); i >= 0; i--)
     {
         const Request& req = (ms.getData())[i];
 
@@ -437,9 +437,6 @@ void QuakeAssistController::clear() {
     {
         teams[i].clearMission();
     }
-
-    delete[] teams;
-    teamCount = 0;
 
     std::cout << "System cleared." << std::endl;
 }

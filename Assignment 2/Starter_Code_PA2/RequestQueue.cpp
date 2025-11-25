@@ -52,13 +52,16 @@ bool RequestQueue::enqueue(const Request& req) {
 
     if (isEmpty())
     {
+        rear = 0;
+        front = 0;
         data[rear] = req;
+        count++;
+        return true;
     }
-    else
-    {
-        rear = nextIndex(rear);
-        data[rear] = req;
-    }
+    
+    rear = nextIndex(rear);
+    data[rear] = req;
+
     count++;
     return true;
 
