@@ -15,6 +15,158 @@ QuakeAssistController::~QuakeAssistController() {
 
 bool QuakeAssistController::parseAndExecute(const std::string& line) {
     //TODO: Read the input file line by line and execute realtime.
+
+    std::stringstream ss(line);
+    std::string cmd;
+    ss >> cmd;
+
+    if (cmd == "INIT_TEAMS")
+    {
+        int numTeams;
+
+        if (!(ss >> numTeams))
+        {
+            std::cout << "Error: Invalid INIT_TEAMS parameters.\n";
+        } 
+        //Go on
+
+        if (teamCount != 0) delete[] teams; //daha önceden var olanlari temizle
+        initializeTeams(numTeams);
+    }
+    else if (cmd == "SET_TEAM_CAPACITY")
+    {
+        int teamID;
+        int capacity;
+
+        if (!(ss >> teamID >> capacity))
+        {
+            std::cout << "Error: Invalid SET_TEAM_CAPACITY parameters.\n";
+        }
+        //Go on
+
+        if (!handleSetTeamCapacity(teamID, capacity))
+        {
+            std::cout << "An error occured while handling capacity" << std::endl;
+        } 
+    }
+    else if (cmd == "ADD_SUPPLY")
+    {
+        std::string id;
+        std::string city;
+        std::string supplyType;
+        int amount;
+        int emergencyLevel;
+
+        if (!(ss >> id >> city >> supplyType >> amount >> emergencyLevel))
+        {
+            std::cout << "Error: Invalid ADD_SUPPLY parameters.\n";
+        }
+        //Go on
+
+        if (handleAddSupply(id, city, supplyType, amount, emergencyLevel))
+        {
+            std::cout << "Request " << id << " added to SUPPLY queue." << std::endl;
+        }
+        else
+        {
+            std::cout << "An error occured while adding supply" << std::endl;
+        } 
+    }
+    else if (cmd == "ADD_RESCUE")
+    {
+        std::string id;
+        std::string city;
+        int numPeople;
+        std::string risk;
+        int emergencyLevel;
+
+        if (!(ss >> id >> city >> numPeople >> risk >> emergencyLevel))
+        {
+            std::cout << "Error: Invalid ADD_RESCUE parameters.\n";
+        }
+        //Go on
+
+        if (handleAddRescue(id, city, numPeople, risk, emergencyLevel))
+        {
+            std::cout << "Request " << id << " added to RESCUE queue." << std::endl;
+        }
+        else
+        {
+            std::cout << "An error occured while adding rescue" << std::endl;
+        }
+    }
+    else if (cmd == "REMOVE_REQUEST")
+    {
+        std::string id;
+
+        if (!(ss >> id))
+        {
+            std::cout << "Error: Invalid REMOVE_REQUEST parameters.\n";
+        }   
+        //Go on
+
+        if (handleRemoveRequest(id))
+        {
+            std::cout << "Request " << id << " removed from queues." << std::endl;
+        }
+        else
+        {
+            std::cout << "Error: Request " << id << " not found." << std::endl;
+        }
+    }
+    else if (cmd == "HANDLE_EMERGENCY")
+    {
+        int teamId;
+        int k;
+
+        if (!(ss >> teamId >> k))
+        {
+            std::cout << "Error: Invalid HANDLE_EMERGENCY parameters.\n";
+        }
+        //Go on
+
+        if (!handleHandleEmergency(teamId, k))
+        {
+            std::cout << "There is an issue in handling emergency" << std::endl;
+        }
+    }
+    else if (cmd == "PRINT_TEAM")
+    {
+        int teamId;
+
+        if (!(ss >> teamId))
+        {
+            std::cout << "Error: Invalid PRINT_TEAM parameters.\n";
+        }
+        //Go on
+
+        printTeam(teamId);
+    }
+    else if (cmd == "DISPATCH_TEAM")
+    {
+        int teamId;
+
+        if (!(ss >> teamId))
+        {
+            std::cout << "Error: Invalid DISPATCH_TEAM parameters.\n";
+        }
+        //Go on
+
+        handleDispatchTeam(teamId);
+    }
+    else if (cmd == "PRINT_QUEUES")
+    {
+        printQueues();
+    }
+    else if (cmd == "CLEAR")
+    {
+        clear();
+    }
+    else
+    {
+        std::cout << "Error: Unknown command '" << cmd << "'." << std::endl; 
+    }
+    return true;
 }
 
 bool QuakeAssistController::initializeTeams(int numTeams) {
@@ -68,7 +220,10 @@ bool QuakeAssistController::handleAddSupply(const std::string& id,
                                             const std::string& supplyTypeStr,
                                             int amount,
                                             int emergencyLevel) {
-    //Create new supply request, and add it to the SUPPLY queue.
+    //TODO: Create new supply request, and add it to the SUPPLY queue.
+
+    Request req = Request(id, cityStr, supplyTypeStr, amount, emergencyLevel);
+    supplyQueue.enqueue(req);
     return true;
 }
 
@@ -77,7 +232,10 @@ bool QuakeAssistController::handleAddRescue(const std::string& id,
                                             int numPeople,
                                             const std::string& riskStr,
                                             int emergencyLevel) {
-    //Create new rescue request, and add it to the RESCUE queue.
+    //TODO: Create new rescue request, and add it to the RESCUE queue.
+
+    Request req = Request(id, cityStr, numPeople, riskStr, emergencyLevel);
+    rescueQueue.enqueue(req);
     return true;
 }
 
@@ -111,15 +269,18 @@ bool QuakeAssistController::handleHandleEmergency(int teamId, int k) {
     //         then break.
     //       * Else, dequeue chosen request from its queue and continue.
 
-    int counter = 0;
+    int counter = 1;
     Request chosenRequest;
     Request supplyRequest;
     Request rescueRequest;
     int teamIdx = findTeamIndexById(teamId);
 
+    int supplyCounter = 0;
+    int rescueCounter = 0;
+
     if (teamIdx < 0) return false;
 
-    while (counter < k)
+    while (counter <= k)
     {
         //Su gerekli request neymiş bulalım
         if (supplyQueue.isEmpty() && rescueQueue.isEmpty()) break;
@@ -154,10 +315,12 @@ bool QuakeAssistController::handleHandleEmergency(int teamId, int k) {
             if (chosenRequest.getType() == "SUPPLY")
             {
                 supplyQueue.dequeue(chosenRequest);
+                supplyCounter++;
             }
             else
             {
                 rescueQueue.dequeue(chosenRequest);
+                rescueCounter++;
             } 
         }
         else
@@ -168,6 +331,10 @@ bool QuakeAssistController::handleHandleEmergency(int teamId, int k) {
         }
         counter++;
     }
+    std::cout << "Team " << teamId << " assigned " << (supplyCounter + rescueCounter) 
+    << " requests (" << supplyCounter << " SUPPLY, " << rescueCounter 
+    << " RESCUE), total workload " << teams[teamIdx].getCurrentWorkload() << std::endl;
+
     return true;
 }
 
@@ -200,11 +367,13 @@ void QuakeAssistController::printQueues() const {
 
     while (!supplyQueue.isEmpty())
     {
-        std::cout << (supplyQueue.getData())[index].getId() << " ";
-        std::cout << (supplyQueue.getData())[index].getCity() << " ";
-        std::cout << (supplyQueue.getData())[index].getSupplyType() << " ";
-        std::cout << (supplyQueue.getData())[index].getAmount() << " ";
-        std::cout << (supplyQueue.getData())[index].getNumPeople() << std::endl;
+        const Request& req = (supplyQueue.getData())[index];
+
+        std::cout << req.getId() << " ";
+        std::cout << req.getCity() << " ";
+        std::cout << req.getSupplyType() << " ";
+        std::cout << req.getAmount() << " ";
+        std::cout << req.getEmergencyLevel() << std::endl;
 
         if (index == (frontIndexOfSupply + (supplyQueue.getCount() - 1)) % supplyQueue.getCapacity()) break;
         index = (index + 1) % supplyQueue.getCapacity();
@@ -215,13 +384,15 @@ void QuakeAssistController::printQueues() const {
 
     while (!rescueQueue.isEmpty())
     {
-        std::cout << (rescueQueue.getData())[index].getId() << " ";
-        std::cout << (rescueQueue.getData())[index].getCity() << " ";
-        std::cout << (rescueQueue.getData())[index].getEmergencyLevel() << " ";
-        std::cout << (rescueQueue.getData())[index].getRisk() << " ";
-        std::cout << (rescueQueue.getData())[index].getNumPeople() << std::endl;
+        const Request& req = (rescueQueue.getData())[index];
 
-        if (index == (frontIndexOfSupply + (rescueQueue.getCount() - 1)) % rescueQueue.getCapacity()) break;
+        std::cout << req.getId() << " ";
+        std::cout << req.getCity() << " ";
+        std::cout << req.getNumPeople() << " ";
+        std::cout << req.getRisk() << " ";
+        std::cout << req.getEmergencyLevel() << std::endl;
+
+        if (index == (frontIndexOfRescue + (rescueQueue.getCount() - 1)) % rescueQueue.getCapacity()) break;
         index = (index + 1) % rescueQueue.getCapacity();
     }
 }
@@ -231,20 +402,44 @@ void QuakeAssistController::printTeam(int teamId) const {
 
     int teamIdx = findTeamIndexById(teamId);
 
-    std::cout << teams[teamIdx].getId() << " ";
-    std::cout << teams[teamIdx].getCurrentWorkload() << " ";
-    std::cout << teams[teamIdx].getMaxLoadCapacity() << std::endl;
+    if (teamIdx < 0) return;
+
+    const MissionStack& ms = teams[teamIdx].getMissionStack();
+
+    std::cout << "TEAM "<< teamId << " STACK:" << std::endl;
+
+    for (int i = 0; i <= ms.getTopIndex(); i++)
+    {
+        const Request& req = (ms.getData())[i];
+
+        std::cout << req.getId() << " ";
+        std::cout << req.getCity() << " ";
+
+        if (req.getType() == "SUPPLY")
+        {
+            std::cout << req.getSupplyType() << " ";
+            std::cout << req.getAmount() << " ";
+        }
+        else
+        {
+            std::cout << req.getNumPeople() << " ";
+            std::cout << req.getRisk() << " ";
+        }
+        std::cout << req.getEmergencyLevel() << std::endl;
+    }
 }
 
 void QuakeAssistController::clear() {
     supplyQueue.clear();
     rescueQueue.clear();
 
-    // for (int i = 0; i < teamCount; i++)
-    // {
-    //     teams[i].getMissionStack().clear();
-    // }
+    for (int i = 0; i < teamCount; i++)
+    {
+        teams[i].clearMission();
+    }
 
     delete[] teams;
     teamCount = 0;
+
+    std::cout << "System cleared." << std::endl;
 }
