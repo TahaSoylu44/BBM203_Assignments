@@ -44,9 +44,6 @@ bool MissionStack::push(const Request& req) {
     
     data[++top] = req;
     return true;
-    
-    // (void)req;
-    // return false;
 }
 
 bool MissionStack::pop(Request& outReq) {
@@ -57,9 +54,6 @@ bool MissionStack::pop(Request& outReq) {
 
     outReq = data[top--];
     return true;
-
-    // (void)outReq;
-    // return false;
 }
 
 bool MissionStack::peek(Request& outReq) const {

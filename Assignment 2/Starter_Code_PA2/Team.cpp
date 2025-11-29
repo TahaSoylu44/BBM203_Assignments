@@ -41,48 +41,62 @@ bool Team::hasActiveMission() const {
 bool Team::tryAssignRequest(const Request& req) {
     //TODO: Implement tryAssignRequest function as explained in the PDF.
 
+    if ((currentWorkload + req.computeWorkloadContribution()) > maxLoadCapacity) return false;
+
     if (missionStack.push(req))
     {
         currentWorkload += req.computeWorkloadContribution();
-
-        if (currentWorkload > maxLoadCapacity)
-        {
-            return false;
-        } 
-        else
-        {
-            return true;
-        }
+        return true;
     }
     else
     {
         return false;
     }
-    // (void)req;
-    // return false;
 }
 
 void Team::rollbackMission(RequestQueue& supplyQueue, RequestQueue& rescueQueue) {
     //TODO: Implement rollbackMission function as explained in the PDF.
 
-    while(!missionStack.isEmpty())
+    if (!hasActiveMission()) return;
+
+    MissionStack tmpStack;
+    Request req;
+
+    while (hasActiveMission()) 
     {
-        Request popedRequest;
+        missionStack.pop(req);
+        tmpStack.push(req);
+    }
 
-        missionStack.pop(popedRequest);
+    int supplySize = supplyQueue.size();
+    int rescueSize = rescueQueue.size();
 
-        if (popedRequest.getType() == "SUPPLY")
+    while (!tmpStack.isEmpty()) 
+    {
+        tmpStack.pop(req);
+        if (req.getType() == "SUPPLY") 
         {
-           supplyQueue.enqueue(popedRequest);
-        }
-        else if (popedRequest.getType() == "RESCUE")
+            supplyQueue.enqueue(req);
+        } 
+        else if (req.getType() == "RESCUE")
         {
-            rescueQueue.enqueue(popedRequest);
+            rescueQueue.enqueue(req);
         }
     }
 
-    // (void)supplyQueue;
-    // (void)rescueQueue;
+    for (int i = 0; i < supplySize && !supplyQueue.isEmpty(); i++)
+    {
+        if (supplyQueue.dequeue(req)) supplyQueue.enqueue(req);
+        else break;
+    }
+
+    for (int i = 0; i < rescueSize && !rescueQueue.isEmpty(); i++)
+    {
+        if (rescueQueue.dequeue(req)) rescueQueue.enqueue(req);
+        else break;
+    }
+    
+    clearMission();
 }
 
 void Team::clearMission() {

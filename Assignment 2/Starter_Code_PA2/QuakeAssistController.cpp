@@ -31,6 +31,10 @@ bool QuakeAssistController::parseAndExecute(const std::string& line) {
         //Go on
 
         if (teamCount != 0) delete[] teams; //daha önceden var olanlari temizle
+
+        supplyQueue.clear();    //Prepare queues to get requests
+        rescueQueue.clear();
+
         initializeTeams(numTeams);
     }
     else if (cmd == "SET_TEAM_CAPACITY")
@@ -327,7 +331,7 @@ bool QuakeAssistController::handleHandleEmergency(int teamId, int k) {
         {
             teams[teamIdx].rollbackMission(supplyQueue, rescueQueue);
             std::cout << "Overload on Team " << teamId << ": rolling back mission." << std::endl;
-            break;
+            return true;
         }
         counter++;
     }

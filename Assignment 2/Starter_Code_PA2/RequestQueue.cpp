@@ -64,9 +64,6 @@ bool RequestQueue::enqueue(const Request& req) {
 
     count++;
     return true;
-
-    // (void)req; // suppress unused warning until implemented
-    // return false;
 }
 
 bool RequestQueue::dequeue(Request& outReq) {
@@ -86,9 +83,6 @@ bool RequestQueue::dequeue(Request& outReq) {
     front = nextIndex(front);
     count--;
     return true;
-
-    // (void)outReq; // suppress unused warning until implemented
-    // return false;
 }
 
 bool RequestQueue::peek(Request& outReq) const {
@@ -143,9 +137,6 @@ bool RequestQueue::removeById(const std::string& id) {
     }
     if(isFound) return true;
     else return false;
-    
-    // (void)id; // suppress unused warning until implemented
-    // return false;
 }
 
 bool RequestQueue::resize(int newCapacity) {

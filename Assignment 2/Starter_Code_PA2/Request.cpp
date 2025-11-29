@@ -86,7 +86,7 @@ int Request::computeEmergencyScore() const {
 
     if (type == "SUPPLY")
     {
-        return 10 * emergencyLevel + ((amount > 50) ? 50 : amount);
+        return 10 * emergencyLevel + ((amount > 50) ? 50 : amount); //Min bulmak için ternary operator
     }
     else if(type == "RESCUE")
     {
