@@ -323,7 +323,7 @@ void AVLTree::printUnassigned(ArtifactNode *node) const
 
     printUnassigned(node->left);
 
-    if (node->data.assignedToName== "")
+    if (node->data.assignedToName == "")
     {
         std::cout << node->data.artifactID << " ";
         std::cout << node->data.name << " ";

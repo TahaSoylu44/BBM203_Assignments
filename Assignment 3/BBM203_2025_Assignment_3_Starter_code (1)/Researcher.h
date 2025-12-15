@@ -13,6 +13,12 @@ struct Researcher
     Researcher();
     Researcher(const std::string &name, int cap);
 
+    // Copy Constructor
+    Researcher(const Researcher &other);
+    
+    // Assignment Operator
+    Researcher &operator=(const Researcher &other);
+
     ~Researcher();
 
     // Try to add an artifact to this researcher's assignment list.

@@ -33,19 +33,22 @@ void ArtifactManager::parseAndExecute(const std::string &line)
     int count = tokenize(line, tokens, maxTokens);
     std::string cmd = tokens[0];
 
-    if (cmd == "ADD_ARTIFACT") handleAddArtifact(tokens, count);
-    else if (cmd == "REMOVE_ARTIFACT") handleRemoveArtifact(tokens, count);
-    else if (cmd == "HIRE_RESEARCHER") handleHireResearcher(tokens, count);
-    else if (cmd == "FIRE_RESEARCHER") handleFireResearcher(tokens, count);
-    else if (cmd == "REQUEST") handleRequest(tokens, count);
-    else if (cmd == "RETURN") handleReturn(tokens, count);
-    else if (cmd == "RETURN_ALL") handleReturnAll(tokens, count);
-    else if (cmd == "RESEARCHER_LOAD") handleResearcherLoad(tokens, count);
-    else if (cmd == "MATCH_RARITY") handleMatchRarity(tokens, count);
-    else if (cmd == "PRINT_UNASSIGNED") handlePrintUnassigned(tokens, count);
-    else if (cmd == "PRINT_STATS") handlePrintStats(tokens, count);
-    else if (cmd == "CLEAR") handleClear(tokens, count);
-    else std::cout << "Error: Unknown command '" << cmd << "'" << '\n';
+    if (!cmd.empty())
+    {
+        if (cmd == "ADD_ARTIFACT") handleAddArtifact(tokens, count);
+        else if (cmd == "REMOVE_ARTIFACT") handleRemoveArtifact(tokens, count);
+        else if (cmd == "HIRE_RESEARCHER") handleHireResearcher(tokens, count);
+        else if (cmd == "FIRE_RESEARCHER") handleFireResearcher(tokens, count);
+        else if (cmd == "REQUEST") handleRequest(tokens, count);
+        else if (cmd == "RETURN") handleReturn(tokens, count);
+        else if (cmd == "RETURN_ALL") handleReturnAll(tokens, count);
+        else if (cmd == "RESEARCHER_LOAD") handleResearcherLoad(tokens, count);
+        else if (cmd == "MATCH_RARITY") handleMatchRarity(tokens, count);
+        else if (cmd == "PRINT_UNASSIGNED") handlePrintUnassigned(tokens, count);
+        else if (cmd == "PRINT_STATS") handlePrintStats(tokens, count);
+        else if (cmd == "CLEAR") handleClear(tokens, count);
+        else std::cout << "Error: Unknown command '" << cmd << "'" << '\n';
+    }
 }
 
 // =================== COMMAND HANDLERS ===================
@@ -187,7 +190,7 @@ void ArtifactManager::handleFireResearcher(const std::string tokens[], int count
 
             if (researcherTree.removeResearcher(researcherName))
             {
-                std::cout << "Researcher " << researcherName << " removed." << '\n';
+                std::cout << "Researcher " << researcherName << " fired." << '\n';
             }
             else
             {

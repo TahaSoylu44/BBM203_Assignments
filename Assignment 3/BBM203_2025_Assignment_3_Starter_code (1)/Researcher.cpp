@@ -20,6 +20,48 @@ Researcher::Researcher(const std::string &name, int cap)
     }
 }
 
+// Copy Constructor
+Researcher::Researcher(const Researcher &other)
+    : fullName(other.fullName),
+      capacity(other.capacity),
+      assignedArtifacts(nullptr),
+      numAssigned(other.numAssigned)  
+{
+    if (capacity > 0)
+    {
+        assignedArtifacts = new int[capacity];
+        for (int i = 0; i < numAssigned; ++i)
+        {
+            assignedArtifacts[i] = other.assignedArtifacts[i];
+        }
+    }
+}
+
+// Assignment Operator
+Researcher &Researcher::operator=(const Researcher &other)
+{
+    if (this == &other) return *this; 
+
+    // Eski hafızayı temizle
+    delete[] assignedArtifacts;
+
+    fullName = other.fullName;
+    capacity = other.capacity;
+    assignedArtifacts = nullptr;
+    numAssigned = other.numAssigned;
+
+    if (capacity > 0)
+    {
+        assignedArtifacts = new int[capacity];
+        for (int i = 0; i < numAssigned; ++i)
+        {
+            assignedArtifacts[i] = other.assignedArtifacts[i];
+        }
+    }
+
+    return *this;
+}
+
 Researcher::~Researcher()
 {
     delete[] assignedArtifacts;
