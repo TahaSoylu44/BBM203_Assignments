@@ -275,6 +275,7 @@ ArtifactNode *AVLTree::find(ArtifactNode *node, int artifactID) const
     //TODO
 
     if (node == nullptr) return nullptr;
+    if (node->data.artifactID == artifactID) return node;
 
     if (artifactID < node->data.artifactID) return find(node->left, artifactID);
     else return find(node->right, artifactID);
@@ -285,8 +286,16 @@ void AVLTree::setAssignedTo(int artifactID, const std::string &researcherName)
     //TODO: assign artifact to researcher
 
     ArtifactNode* beAssigning = findArtifact(artifactID);
-    beAssigning->data.assignedToName = researcherName;
-    beAssigning->data.updateValueBasedOnUsage();
+
+    if (beAssigning)
+    {
+        beAssigning->data.assignedToName = researcherName;
+        beAssigning->data.updateValueBasedOnUsage();
+    }
+    else
+    {
+        std::cout << "Artifact " << artifactID << " cannot be found." << '\n';
+    }
 }
 
 void AVLTree::clearAssignedTo(int artifactID)
@@ -294,7 +303,8 @@ void AVLTree::clearAssignedTo(int artifactID)
     //TODO
 
     ArtifactNode* beUnassigning = findArtifact(artifactID);
-    beUnassigning->data.assignedToName = "";
+    if (beUnassigning) beUnassigning->data.assignedToName = "";
+    else std::cout << "Artifact " << artifactID << " cannot be found." << '\n';
 }
 
 void AVLTree::printUnassigned() const
@@ -313,7 +323,7 @@ void AVLTree::printUnassigned(ArtifactNode *node) const
 
     printUnassigned(node->left);
 
-    if (node->data.name == "")
+    if (node->data.assignedToName== "")
     {
         std::cout << node->data.artifactID << " ";
         std::cout << node->data.name << " ";
@@ -372,4 +382,23 @@ void AVLTree::traversePostOrderForStats(ArtifactNode *node) const
     std::cout << node->data.name << " ";
     std::cout << node->data.rarityLevel << " ";
     std::cout << node->data.researchValue << '\n';
+}
+
+void AVLTree::inorderTraversalForMatchRarityHelper(ArtifactNode* node, int minRarity) const
+{
+    if (node == nullptr) return;
+
+    inorderTraversalForMatchRarityHelper(node->left, minRarity);
+
+    if (node->data.rarityLevel >= minRarity)
+    {
+        std::cout << node->data.artifactID << '\n';
+    }
+
+    inorderTraversalForMatchRarityHelper(node->right, minRarity);
+}
+
+void AVLTree::inorderTraversalForMatchRarity(int minRarity) const
+{
+    inorderTraversalForMatchRarityHelper(root, minRarity);
 }

@@ -44,6 +44,7 @@ void ArtifactManager::parseAndExecute(const std::string &line)
     else if (cmd == "MATCH_RARITY") handleMatchRarity(tokens, count);
     else if (cmd == "PRINT_UNASSIGNED") handlePrintUnassigned(tokens, count);
     else if (cmd == "PRINT_STATS") handlePrintStats(tokens, count);
+    else if (cmd == "CLEAR") handleClear(tokens, count);
     else std::cout << "Error: Unknown command '" << cmd << "'" << '\n';
 }
 
@@ -390,7 +391,16 @@ void ArtifactManager::handleMatchRarity(const std::string tokens[], int count)
     // Traverse AVL tree and print all artifacts with rarity >= minRarity.
     // You may choose any reasonable order (probably inorder) unless specified otherwise
     // in your PDF. Artifacts may be assigned or unassigned; print as required.
-    artifactTree.traversePostOrderForStats();
+
+    if (count == 2)
+    {
+        int minRarity = std::stoi(tokens[1]);
+        artifactTree.inorderTraversalForMatchRarity(minRarity);
+    }
+    else
+    {
+        std::cout << "There is no enough parameters" << '\n';
+    } 
 }
 
 void ArtifactManager::handlePrintUnassigned(const std::string tokens[], int count)
@@ -423,15 +433,21 @@ void ArtifactManager::handlePrintStats(const std::string tokens[], int count)
     int totalRarity = artifactTree.getTotalRarity();
     int totalLoad = researcherTree.getTotalLoad();
 
-    int averageArtifactRarity = totalRarity / totalArtifacts;
-    int averageResearcherLoad = totalLoad / totalResearchers;
+    int averageArtifactRarity;
+    int averageResearcherLoad;
 
+    if (totalArtifacts != 0) averageArtifactRarity = totalRarity / totalArtifacts;
+    else averageArtifactRarity = 0;
+
+    if (totalResearchers != 0) averageResearcherLoad = totalLoad / totalResearchers;
+    else averageResearcherLoad = 0;
+    
     std::cout << "The number of total artifacts: " << totalArtifacts << '\n';
     std::cout << "The number of total researchers: " << totalResearchers << '\n';
     std::cout << "The number of total rarity: " << totalRarity << '\n';
     std::cout << "The number of total researcher load: " << totalLoad << '\n';
     std::cout << "The number of average artifact rarity: " << averageArtifactRarity << '\n';
-    std::cout << "The number of average researcher loead: " << averageResearcherLoad << '\n';
+    std::cout << "The number of average researcher load: " << averageResearcherLoad << '\n';
 
     researcherTree.traversePreOrderForStats();
     artifactTree.traversePostOrderForStats();

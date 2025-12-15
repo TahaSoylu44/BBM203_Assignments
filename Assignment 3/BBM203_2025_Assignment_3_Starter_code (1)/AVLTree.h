@@ -59,6 +59,9 @@ public:
     // Delete all nodes.
     void clear();
 
+    // Inorder Traversal for match rarity
+    void inorderTraversalForMatchRarity(int minRarity) const;
+
 private:
     ArtifactNode *root;
 
@@ -83,6 +86,8 @@ private:
     int getTotalRarity(ArtifactNode *node) const;
 
     void traversePostOrderForStats(ArtifactNode *node) const;
+
+    void inorderTraversalForMatchRarityHelper(ArtifactNode* node, int minRarity) const;
 };
 
 #endif // AVLTREE_H

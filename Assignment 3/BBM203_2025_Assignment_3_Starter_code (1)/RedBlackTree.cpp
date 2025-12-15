@@ -37,6 +37,7 @@ ResearcherNode *RedBlackTree::find(ResearcherNode *node, const std::string &full
     //TODO: search and find researcher by name
 
     if (node == nullptr) return nullptr;
+    if (node->data.fullName == fullName) return node;
 
     if (fullName < node->data.fullName) return find(node->left, fullName);
     else return find(node->right, fullName);
@@ -375,7 +376,7 @@ int RedBlackTree::getResearcherCount(ResearcherNode *node) const
 {
     // TODO: return size of subtree.
 
-    if (node == nullptr) return;
+    if (node == nullptr) return 0;
 
     return getResearcherCount(node->left) + getResearcherCount(node->right) + 1;
 }
@@ -391,7 +392,7 @@ int RedBlackTree::getTotalLoad(ResearcherNode *node) const
 
     if (node == nullptr) return 0;
 
-    return getTotalLoad(root->left) + getTotalLoad(root->right) + node->data.numAssigned;
+    return getTotalLoad(node->left) + getTotalLoad(node->right) + node->data.numAssigned;
 }
 
 void RedBlackTree::traversePreOrderForStats() const

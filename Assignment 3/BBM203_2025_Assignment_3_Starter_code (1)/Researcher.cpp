@@ -55,10 +55,14 @@ bool Researcher::removeArtifact(int artifactID)
 
     for (int i = 0; i < numAssigned; i++)
     {
-        if (assignedArtifacts[i] == artifactID) idx = i;
+        if (assignedArtifacts[i] == artifactID)
+        {
+            idx = i;
+            break;
+        }
     }
 
-    for (int i = idx; i < numAssigned; i++)
+    for (int i = idx; i < numAssigned - 1; i++)
     {
         assignedArtifacts[i] = assignedArtifacts[i + 1];
     }
