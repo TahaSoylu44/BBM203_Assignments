@@ -47,7 +47,7 @@ void ArtifactManager::parseAndExecute(const std::string &line)
         else if (cmd == "PRINT_UNASSIGNED") handlePrintUnassigned(tokens, count);
         else if (cmd == "PRINT_STATS") handlePrintStats(tokens, count);
         else if (cmd == "CLEAR") handleClear(tokens, count);
-        else std::cout << "Error: Unknown command '" << cmd << "'" << '\n';
+        else std::cout << "Error: Unknown command '" << cmd << "'." << '\n';
     }
 }
 
@@ -245,7 +245,7 @@ void ArtifactManager::handleRequest(const std::string tokens[], int count)
                         artifactTree.setAssignedTo(artifactID, researcherName);
                         researcher.addArtifact(artifactID);
 
-                        std::cout << "Artifact " << artifactID << " assigned to " << researcherName << '\n';
+                        std::cout << "Artifact " << artifactID << " assigned to " << researcherName << "." << '\n';
                     } 
                 }
                 else
@@ -299,7 +299,7 @@ void ArtifactManager::handleReturn(const std::string tokens[], int count)
                     researcher.removeArtifact(artifactID);
                     artifactTree.clearAssignedTo(artifactID);
 
-                    std::cout << "Artifact " << artifactID << " returned by " << researcherName << '\n';
+                    std::cout << "Artifact " << artifactID << " returned by " << researcherName << "." << '\n';
                 }
                 else
                 {
@@ -346,7 +346,7 @@ void ArtifactManager::handleReturnAll(const std::string tokens[], int count)
             }
             
             researcher.removeAllArtifacts();
-            std::cout << "Researcher " << researcherName << "'s all artifacts returned." << '\n';
+            std::cout << "All artifacts returned by " << researcherName << "." << '\n';
         }
         else
         {
@@ -398,6 +398,7 @@ void ArtifactManager::handleMatchRarity(const std::string tokens[], int count)
     if (count == 2)
     {
         int minRarity = std::stoi(tokens[1]);
+        std::cout << "=== MATCH_RARITY "<< minRarity << " ===" << '\n';
         artifactTree.inorderTraversalForMatchRarity(minRarity);
     }
     else
@@ -411,6 +412,7 @@ void ArtifactManager::handlePrintUnassigned(const std::string tokens[], int coun
     // Expected: PRINT_UNASSIGNED
     // TODO:
     // Print a header if needed, then call artifactTree.printUnassigned().
+    std::cout << "Unassigned artifacts:" << '\n';
     artifactTree.printUnassigned();
 }
 
@@ -431,6 +433,8 @@ void ArtifactManager::handlePrintStats(const std::string tokens[], int count)
     //      artifactTree.traversePostOrderForStats()
     //    (Exact formatting defined in your PDF.)
 
+    std::cout << "=== SYSTEM STATISTICS ===" << '\n';
+
     int totalArtifacts = artifactTree.getArtifactCount();
     int totalResearchers = researcherTree.getResearcherCount();
     int totalRarity = artifactTree.getTotalRarity();
@@ -445,14 +449,15 @@ void ArtifactManager::handlePrintStats(const std::string tokens[], int count)
     if (totalResearchers != 0) averageResearcherLoad = totalLoad / totalResearchers;
     else averageResearcherLoad = 0;
     
-    std::cout << "The number of total artifacts: " << totalArtifacts << '\n';
-    std::cout << "The number of total researchers: " << totalResearchers << '\n';
-    std::cout << "The number of total rarity: " << totalRarity << '\n';
-    std::cout << "The number of total researcher load: " << totalLoad << '\n';
-    std::cout << "The number of average artifact rarity: " << averageArtifactRarity << '\n';
-    std::cout << "The number of average researcher load: " << averageResearcherLoad << '\n';
+    std::cout << "Artifacts: " << totalArtifacts << '\n';
+    std::cout << "Researchers: " << totalResearchers << '\n';
+    std::cout << "Average rarity: " << averageArtifactRarity << '\n';
+    std::cout << "Average load: " << averageResearcherLoad << '\n';
 
+    std::cout << "Researchers:" << '\n';
     researcherTree.traversePreOrderForStats();
+
+    std::cout << "Artifacts:" << '\n';
     artifactTree.traversePostOrderForStats();
 }
 

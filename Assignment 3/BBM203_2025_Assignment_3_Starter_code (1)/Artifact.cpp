@@ -5,7 +5,8 @@ Artifact::Artifact()
       name(""),
       rarityLevel(1),
       researchValue(0),
-      assignedToName("")
+      assignedToName(""),
+      numOfSuccesfulAssignments(0)
 {
 }
 
@@ -14,13 +15,19 @@ Artifact::Artifact(int id, const std::string &n, int rarity, int value)
       name(n),
       rarityLevel(rarity),
       researchValue(value),
-      assignedToName("")
+      assignedToName(""),
+      numOfSuccesfulAssignments(0)
 {
 }
 
 void Artifact::updateValueBasedOnUsage()
 {
   //TODO
+  updateNumOfSuccesfulAssignments();
+  researchValue += numOfSuccesfulAssignments * rarityLevel;
+}
 
-  researchValue += rarityLevel;
+void Artifact::updateNumOfSuccesfulAssignments()
+{
+  numOfSuccesfulAssignments++;
 }

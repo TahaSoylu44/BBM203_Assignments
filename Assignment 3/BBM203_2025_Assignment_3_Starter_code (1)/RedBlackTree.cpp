@@ -410,12 +410,7 @@ void RedBlackTree::traversePreOrderForStats(ResearcherNode *node) const
 
     std::cout << node->data.fullName << " ";
     std::cout << node->data.capacity << " ";
-
-    std::cout << "[";
-    for (int i = 0; i < node->data.numAssigned; i++) std::cout << node->data.assignedArtifacts[i] << ",";
-    std::cout << "]";
-
-    std::cout << '\n';
+    std::cout << node->data.numAssigned << '\n';
 
     traversePreOrderForStats(node->left);
     traversePreOrderForStats(node->right);

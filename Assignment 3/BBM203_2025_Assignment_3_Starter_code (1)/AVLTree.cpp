@@ -381,7 +381,16 @@ void AVLTree::traversePostOrderForStats(ArtifactNode *node) const
     std::cout << node->data.artifactID << " ";
     std::cout << node->data.name << " ";
     std::cout << node->data.rarityLevel << " ";
-    std::cout << node->data.researchValue << '\n';
+    std::cout << node->data.researchValue << " ";
+
+    if (node->data.assignedToName == "")
+    {
+        std::cout << "UNASSIGNED" << '\n';
+    }
+    else
+    {
+        std::cout << node->data.assignedToName << '\n';
+    }  
 }
 
 void AVLTree::inorderTraversalForMatchRarityHelper(ArtifactNode* node, int minRarity) const
@@ -392,7 +401,11 @@ void AVLTree::inorderTraversalForMatchRarityHelper(ArtifactNode* node, int minRa
 
     if (node->data.rarityLevel >= minRarity)
     {
-        std::cout << node->data.artifactID << '\n';
+        std::cout << node->data.artifactID << " ";
+        std::cout << node->data.name << " ";
+        std::cout << node->data.rarityLevel << " ";
+        std::cout << node->data.researchValue << " ";
+        std::cout << "ASSIGNED:" << node->data.assignedToName << '\n';
     }
 
     inorderTraversalForMatchRarityHelper(node->right, minRarity);

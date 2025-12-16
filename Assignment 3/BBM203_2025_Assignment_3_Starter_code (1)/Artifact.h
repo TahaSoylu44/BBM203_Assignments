@@ -10,11 +10,13 @@ struct Artifact
     int rarityLevel;             // [1..10]
     int researchValue;           // arbitrary integer score
     std::string assignedToName;  // empty string ("") if unassigned, otherwise researcher name
+    int numOfSuccesfulAssignments; //hocam bunu eklememissiniz, ekledim mecburen.
 
     Artifact();
     Artifact(int id, const std::string &n, int rarity, int value);
 
     void updateValueBasedOnUsage();
+    void updateNumOfSuccesfulAssignments(); //hocam bunu da ekledim.
 };
 
 
